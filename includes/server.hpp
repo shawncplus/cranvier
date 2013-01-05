@@ -1,36 +1,35 @@
-#include <cstdlib>
-#include <cstdio>
-#include <iostream>
-#include <boost/bind.hpp>
-#include <boost/smart_ptr.hpp>
+#ifndef CRANVIER_SERVER_H
+#define CRANVIER_SERVER_H
+
 #include <boost/asio.hpp>
-#include <boost/assign/list_of.hpp>
-#include <boost/lexical_cast.hpp>
-#include <list>
-#include <anachronism/nvt.h>
+
+#include "session.hpp"
+#include "player.hpp"
 
 using boost::asio::ip::tcp;
-using namespace boost::assign;
-typedef boost::shared_ptr<tcp::socket> socket_ptr;
 
 namespace Cranvier
 {
 	class Server
 	{
 		private:
-			unsigned int port;
-			boost::asio::io_service* service;
-			tcp::acceptor* acc;
-			void (*event_callback)(telnet_nvt *, telnet_event *);
+			unsigned int _port;
+			boost::asio::io_service& _service;
+			tcp::acceptor _acc;
+			std::vector<Cranvier::Player*> _players;
 
-//		std::list players;
+			void _start_accept();
+			void _accept(Cranvier::Session* session, const boost::system::error_code& error);
+
 		public:
-			static std::map<unsigned char, const char*> TELNET_OPS;
-
-			Server(unsigned int port, void (*event_callback)(telnet_nvt *, telnet_event *)) : port( port ), event_callback ( event_callback ) { }
-
-			void start();
-			void session(socket_ptr sock);
-			void on_event(telnet_nvt* nvt, telnet_event* event);
+			Server(unsigned int port, boost::asio::io_service& service) :
+				_port( port ),
+				_service ( service ),
+				_acc(service, tcp::endpoint(tcp::v4(), port))
+			{
+				this->_start_accept();
+			}
 	};
 }
+
+#endif

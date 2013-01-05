@@ -1,16 +1,9 @@
-#include <anachronism/nvt.h>
-#include <iostream>
 #include <boost/lexical_cast.hpp>
+#include <boost/asio.hpp>
 #include <exception>
+#include <iostream>
 
-#include "includes/server.hpp"
-
-Cranvier::Server* server;
-
-void handle_server_event(telnet_nvt* nvt, telnet_event* event)
-{
-	server->on_event(nvt, event);
-}
+#include "includes/mud.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -22,8 +15,10 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 
-		server = new Cranvier::Server(boost::lexical_cast<unsigned int>(argv[1]), &handle_server_event);
-		server->start();
+		boost::asio::io_service service;
+		server = new Cranvier::Server(boost::lexical_cast<unsigned int>(argv[1]), service);//, &handle_server_event);
+
+		service.run();
 	}
 	catch (std::exception& e)
 	{
