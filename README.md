@@ -2,7 +2,7 @@ VERY in progress C++ port of RanvierMUD. Oh god, seriously, don't use this. Seri
 
 Build with
 
-    clang++ cran.cpp server.cpp -o cran -lboost_system -lboost_thread -lanachronism
+    clang++ cran.cpp interp.cpp  server.cpp session.cpp -o cran -lboost_system -lpthread -lanachronism -Wall
 
 Run with
 
